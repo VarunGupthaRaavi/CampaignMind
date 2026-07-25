@@ -23,27 +23,17 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    # Database (Supabase IPv4 Pooler Host default for Render compatibility)
-    DATABASE_URL: str = "postgresql+asyncpg://postgres.jqqthrmlwgwydsrtyomv:AIproject%4016%24%2B@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
-
-    @validator("DATABASE_URL", pre=True)
-    def assemble_db_url(cls, v: str) -> str:
-        if v:
-            if v.startswith("postgresql://"):
-                v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
-            elif v.startswith("postgres://"):
-                v = v.replace("postgres://", "postgresql+asyncpg://", 1)
-            return v
-        return "postgresql+asyncpg://postgres.jqqthrmlwgwydsrtyomv:AIproject%4016%24%2B@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
+    # Database
+    DATABASE_URL: str = "postgresql+asyncpg://postgres:AIproject%4016%24%2B@db.jqqthrmlwgwydsrtyomv.supabase.co:5432/postgres"
 
     # Supabase Auth Secrets
     SUPABASE_URL: str = "https://jqqthrmlwgwydsrtyomv.supabase.co"
-    SUPABASE_ANON_KEY: str = "mock-anon-key"
-    SUPABASE_SERVICE_ROLE_KEY: str = "mock-service-key"
+    SUPABASE_ANON_KEY: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcXRocm1sd2d3eWRzcnR5b212Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ5NjgxOTYsImV4cCI6MjEwMDU0NDE5Nn0.1npvOz9btcxvYLFocI4jONxOhqAGW7up-iIIY443o2o"
+    SUPABASE_SERVICE_ROLE_KEY: str = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpxcXRocm1sd2d3eWRzcnR5b212Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NDk2ODE5NiwiZXhwIjoyMTAwNTQ0MTk2fQ.qxq1Z_W5wasFQlpaiEfplO87poph8FvDiR6p6hXT56w"
     SUPABASE_JWT_SECRET: str = "7df43c24-1766-4e6f-85eb-929dfafdb0fd"
 
     # AI Integration (Gemini 2.5 Flash)
-    GEMINI_API_KEY: str = "mock-gemini-api-key"
+    GEMINI_API_KEY: str = "[ENCRYPTION_KEY]"
     GEMINI_MODEL_NAME: str = "gemini-2.5-flash"
 
     # Security
