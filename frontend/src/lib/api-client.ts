@@ -51,12 +51,21 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     },
   }
 
-  const response = await fetch(url, config)
+  try {
+    const response = await fetch(url, config)
 
-  if (!response.ok) {
-    const errorData = await response.json().catch(() => ({}))
-    throw new Error(errorData.detail || `API request failed with status ${response.status}`)
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}))
+      throw new Error(errorData.detail || `API request failed with status ${response.status}`)
+    }
+
+    return response.json()
+  } catch (err: any) {
+    if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+      throw new Error(
+        `Failed to connect to backend at ${url}. If using Render free tier, the server may be waking up (cold start). Please check VITE_API_BASE_URL in Vercel and try again.`
+      )
+    }
+    throw err
   }
-
-  return response.json()
 }
