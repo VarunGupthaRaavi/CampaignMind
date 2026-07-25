@@ -153,6 +153,7 @@ async def get_campaign_detail(
 
 
 @router.put("/{campaign_id}", response_model=APIResponse[CampaignDetailResponse])
+@router.patch("/{campaign_id}", response_model=APIResponse[CampaignDetailResponse])
 async def update_campaign(
     campaign_id: UUID,
     obj_in: CampaignUpdate,

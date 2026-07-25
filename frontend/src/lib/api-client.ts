@@ -1,6 +1,24 @@
 import { supabase } from './supabase'
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
+/**
+ * Formats API URL dynamically ensuring /api/v1 suffix and stripping duplicate slashes
+ */
+function getApiUrl(endpoint: string): string {
+  let baseUrl = (import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1').trim()
+
+  // Remove trailing slashes from baseUrl
+  baseUrl = baseUrl.replace(/\/+$/, '')
+
+  // Ensure /api/v1 suffix exists if missing
+  if (!baseUrl.endsWith('/api/v1')) {
+    baseUrl = `${baseUrl}/api/v1`
+  }
+
+  // Ensure leading slash on endpoint
+  const cleanEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`
+
+  return `${baseUrl}${cleanEndpoint}`
+}
 
 interface RequestOptions extends RequestInit {
   params?: Record<string, string>
@@ -18,7 +36,7 @@ export async function apiClient<T>(endpoint: string, options: RequestOptions = {
     ...(token ? { Authorization: `Bearer ${token}` } : {}),
   }
 
-  let url = `${API_BASE_URL}${endpoint}`
+  let url = getApiUrl(endpoint)
   if (params) {
     const searchParams = new URLSearchParams(params)
     url += `?${searchParams.toString()}`
