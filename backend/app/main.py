@@ -23,15 +23,15 @@ app = FastAPI(
     lifespan=lifespan,
 )
 
-# Configure CORS Middleware
-if settings.BACKEND_CORS_ORIGINS:
-    app.add_middleware(
-        CORSMiddleware,
-        allow_origins=[str(origin) for origin in settings.BACKEND_CORS_ORIGINS],
-        allow_credentials=True,
-        allow_methods=["*"],
-        allow_headers=["*"],
-    )
+# Configure Flexible CORS Middleware for Production (Vercel, Render, Localhost)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_origin_regex=r"https://.*\.vercel\.app",
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Include v1 API router
 app.include_router(api_router, prefix=settings.API_V1_STR)
