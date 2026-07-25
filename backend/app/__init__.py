@@ -1,0 +1,3 @@
+"""
+CampaignMind FastAPI Application Package
+"""
