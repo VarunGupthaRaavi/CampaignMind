@@ -23,14 +23,24 @@ class Settings(BaseSettings):
             return v
         raise ValueError(v)
 
-    # Database
-    DATABASE_URL: str = "postgresql+asyncpg://postgres:postgres@localhost:5432/postgres"
+    # Database (Supabase IPv4 Pooler Host default for Render compatibility)
+    DATABASE_URL: str = "postgresql+asyncpg://postgres.jqqthrmlwgwydsrtyomv:AIproject%4016%24%2B@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
+
+    @validator("DATABASE_URL", pre=True)
+    def assemble_db_url(cls, v: str) -> str:
+        if v:
+            if v.startswith("postgresql://"):
+                v = v.replace("postgresql://", "postgresql+asyncpg://", 1)
+            elif v.startswith("postgres://"):
+                v = v.replace("postgres://", "postgresql+asyncpg://", 1)
+            return v
+        return "postgresql+asyncpg://postgres.jqqthrmlwgwydsrtyomv:AIproject%4016%24%2B@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
 
     # Supabase Auth Secrets
-    SUPABASE_URL: str = "https://example.supabase.co"
+    SUPABASE_URL: str = "https://jqqthrmlwgwydsrtyomv.supabase.co"
     SUPABASE_ANON_KEY: str = "mock-anon-key"
     SUPABASE_SERVICE_ROLE_KEY: str = "mock-service-key"
-    SUPABASE_JWT_SECRET: str = "mock-jwt-secret"
+    SUPABASE_JWT_SECRET: str = "7df43c24-1766-4e6f-85eb-929dfafdb0fd"
 
     # AI Integration (Gemini 2.5 Flash)
     GEMINI_API_KEY: str = "mock-gemini-api-key"
