@@ -1,6 +1,9 @@
 from typing import List, Union
 from pydantic import AnyHttpUrl, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
+from sqlalchemy.engine.url import make_url
+
+DEFAULT_SUPABASE_POOLER_URL = "postgresql+asyncpg://postgres.jqqthrmlwgwydsrtyomv:AIproject%4016%24%2B@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
 
 
 class Settings(BaseSettings):
@@ -25,12 +28,12 @@ class Settings(BaseSettings):
         raise ValueError(v)
 
     # Database
-    DATABASE_URL: str = "postgresql+asyncpg://postgres.jqqthrmlwgwydsrtyomv:AIproject%4016%24%2B@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
+    DATABASE_URL: str = DEFAULT_SUPABASE_POOLER_URL
 
     @validator("DATABASE_URL", pre=True)
     def assemble_db_url(cls, v: str) -> str:
         if not v:
-            return "postgresql+asyncpg://postgres.jqqthrmlwgwydsrtyomv:AIproject%4016%24%2B@aws-0-ap-northeast-1.pooler.supabase.com:6543/postgres"
+            return DEFAULT_SUPABASE_POOLER_URL
 
         v_str = str(v).strip().strip("'").strip('"')
 
@@ -49,10 +52,16 @@ class Settings(BaseSettings):
             v_str = v_str.replace("AIproject@16$+", "AIproject%4016%24%2B")
 
         # Map IPv6 Supabase direct host to IPv4 pooler host for Render compatibility
-        if "db.jqqthrmlwgwydsrtyomv.supabase.co:5432" in v_str:
+        if "db.jqqthrmlwgwydsrtyomv.supabase.co" in v_str:
             v_str = v_str.replace("db.jqqthrmlwgwydsrtyomv.supabase.co:5432", "aws-0-ap-northeast-1.pooler.supabase.com:6543")
+            v_str = v_str.replace("db.jqqthrmlwgwydsrtyomv.supabase.co", "aws-0-ap-northeast-1.pooler.supabase.com:6543")
 
-        return v_str
+        # Validate with SQLAlchemy make_url parser; if malformed env var, fall back gracefully
+        try:
+            make_url(v_str)
+            return v_str
+        except Exception:
+            return DEFAULT_SUPABASE_POOLER_URL
 
     # Supabase Auth Secrets
     SUPABASE_URL: str = "https://jqqthrmlwgwydsrtyomv.supabase.co"
